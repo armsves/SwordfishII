@@ -172,3 +172,32 @@ pre {
 .wormhole-button:hover {
   background-color: #005bb5;
 }
+
+.pools-list {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.pools-list h2 {
+  margin-bottom: 10px;
+}
+
+.pools-list ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.pools-list li {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.pools-list li:last-child {
+  border-bottom: none;
+}
+
+.pools-list div {
+  margin: 5px 0;
+}
