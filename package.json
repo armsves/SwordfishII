@@ -11,7 +11,9 @@
   "dependencies": {
     "@reown/appkit": "1.6.8",
     "@reown/appkit-adapter-ethers": "1.6.8",
+    "@stellaswap/swap-sdk": "^0.0.16",
     "@wormhole-foundation/sdk": "^1.10.0",
+    "dotenv": "^16.4.7",
     "ethers": "^6.13.4",
     "next": "15.1.6",
     "react": "19.0.0",
