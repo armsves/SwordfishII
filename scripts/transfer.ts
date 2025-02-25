@@ -38,7 +38,7 @@ import {
     // Note: The Token bridge will dedust past 8 decimals
     // This means any amount specified past that point will be returned
     // To the caller
-    const amt = '0.00001';
+    const amt = '0.00002';
   
     // With automatic set to true, perform an automatic transfer. This will invoke a relayer
     // Contract intermediary that knows to pick up the transfers
@@ -51,7 +51,7 @@ import {
     // The Wormhole relayer has the ability to deliver some native gas funds to the destination account
     // The amount specified for native gas will be swapped for the native gas token according
     // To the swap rate provided by the contract, denominated in native gas tokens
-    const nativeGas = automatic ? '0.000005' : undefined;
+    const nativeGas = automatic ? '0.000001' : undefined;
   
     // Get signer from local key but anything that implements
     // Signer interface (e.g. wrapper around web wallet) should work
@@ -142,15 +142,31 @@ import {
     console.log('Starting transfer');
     const srcTxids = await xfer.initiateTransfer(route.source.signer);
     console.log(`Started transfer: `, srcTxids);
-  
+
     // If automatic, we're done
     if (route.delivery?.automatic) return xfer;
-  
+
     // 2) Wait for the VAA to be signed and ready (not required for auto transfer)
     console.log('Getting Attestation');
-    const attestIds = await xfer.fetchAttestation(60_000);
-    console.log(`Got Attestation: `, attestIds);
-  
+    
+    // Parse the transaction to get Wormhole messages
+    const messages = await route.source.chain.parseTransaction(srcTxids[0]);
+    
+    if (messages.length === 0) {
+        throw new Error('No Wormhole messages found in the transaction');
+    }
+    
+    const whMessage = messages[0]; // Use the first message
+    console.log('Found Wormhole message:', whMessage);
+    
+    // Get the VAA using the message
+    const vaa = await wh.getVaa(
+        whMessage,
+        "TokenBridge:Transfer",
+        60000
+    );
+    console.log('Retrieved VAA:', vaa);
+
     // 3) Redeem the VAA on the dest chain
     console.log('Completing Transfer');
     const destTxids = await xfer.completeTransfer(route.destination.signer);
