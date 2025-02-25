@@ -8,7 +8,7 @@ export const WormholeButton = () => {
 
   useEffect(() => {
     const initializeWormhole = async () => {
-      const wh = await wormhole('Testnet', [evm]);
+      const wh = await wormhole('Mainnet', [evm]);
       // You can use the wh object to interact with Wormhole
     };
     initializeWormhole();
