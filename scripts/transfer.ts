@@ -10,17 +10,16 @@ import {
   } from '@wormhole-foundation/sdk';
   
   import evm from '@wormhole-foundation/sdk/evm';
-  import solana from '@wormhole-foundation/sdk/solana';
   import { SignerStuff, getSigner, waitLog } from './helpers';
   
   (async function () {
     // Init Wormhole object, passing config for which network
     // to use (e.g. Mainnet/Testnet) and what Platforms to support
-    const wh = await wormhole('Testnet', [evm, solana]);
+    const wh = await wormhole('Mainnet', [evm]);
   
     // Grab chain Contexts -- these hold a reference to a cached rpc client
-    const sendChain = wh.getChain('Avalanche');
-    const rcvChain = wh.getChain('Solana');
+    const sendChain = wh.getChain('Arbitrum');
+    const rcvChain = wh.getChain('Moonbeam');
 
     // Shortcut to allow transferring native gas token
     const token = Wormhole.tokenId(sendChain.chain, 'native');
@@ -39,7 +38,7 @@ import {
     // Note: The Token bridge will dedust past 8 decimals
     // This means any amount specified past that point will be returned
     // To the caller
-    const amt = '0.05';
+    const amt = '0.00001';
   
     // With automatic set to true, perform an automatic transfer. This will invoke a relayer
     // Contract intermediary that knows to pick up the transfers
@@ -52,7 +51,7 @@ import {
     // The Wormhole relayer has the ability to deliver some native gas funds to the destination account
     // The amount specified for native gas will be swapped for the native gas token according
     // To the swap rate provided by the contract, denominated in native gas tokens
-    const nativeGas = automatic ? '0.01' : undefined;
+    const nativeGas = automatic ? '0.000005' : undefined;
   
     // Get signer from local key but anything that implements
     // Signer interface (e.g. wrapper around web wallet) should work
