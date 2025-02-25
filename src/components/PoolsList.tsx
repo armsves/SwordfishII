@@ -1,8 +1,15 @@
 'use client'
 import React, { useState, useEffect } from 'react';
+import { ethers } from 'ethers';
+import {
+  useAppKitState,
+  useAppKitTheme,
+  useAppKitEvents,
+  useAppKitAccount,
+  useWalletInfo
+   } from '@reown/appkit/react'
 
 interface Pool {
-  id: string;
   name: string;
   chain: string;
   apy: number;
@@ -17,11 +24,12 @@ interface Pool {
   exposure: string;
   poolMeta: string | null;
   underlyingTokens: string[] | null;
-  pool: string; // Add this line
+  pool: string;
 }
 
 const PoolsList: React.FC = () => {
   const [pools, setPools] = useState<Pool[]>([]);
+  const { address, caipAddress, isConnected, embeddedWalletInfo } = useAppKitAccount();
 
   useEffect(() => {
     const fetchPools = async () => {
@@ -29,9 +37,11 @@ const PoolsList: React.FC = () => {
         const response = await fetch('https://yields.llama.fi/pools');
         const data = await response.json();
         const filteredPools: Pool[] = data.data
-          .filter((pool: Pool) => pool.chain === 'Moonbeam' || pool.chain === 'Rootstock')
+          .filter((pool: Pool) => 
+            (pool.chain === 'Moonbeam' || pool.chain === 'Rootstock') && pool.tvlUsd > 10000
+          )
           .sort((a: Pool, b: Pool) => b.apy - a.apy)
-          .slice(0, 10);
+          .slice(0, 3);
         setPools(filteredPools);
         console.log('Pools fetched:', filteredPools);
       } catch (error) {
@@ -40,29 +50,34 @@ const PoolsList: React.FC = () => {
     };
 
     fetchPools();
+    const interval = setInterval(fetchPools, 30000); // Reload every 30 seconds
+
+    return () => clearInterval(interval); // Cleanup interval on component unmount
   }, []);
+
+  const hasOpenPosition = (pool: Pool) => {
+    // Implement logic to check if there's any open position with the connected wallet address
+    // This is a placeholder implementation
+    return address !== null;
+  };
 
   return (
     <div className="pools-list">
-      <h2>Top 10 Pools by APY</h2>
+      <h2>Top 3 Pools by APY</h2>
       <ul>
-        {pools.map((pool: Pool) => (
-          <li key={pool.id}>
-            <div><strong>Name:</strong> {pool.name}</div>
+        {pools.map((pool: Pool, index: number) => (
+          <li key={pool.pool} className="pool-card">
             <div><strong>Chain:</strong> {pool.chain}</div>
             <div><strong>APY:</strong> {pool.apy}%</div>
-            <div><strong>Project:</strong> {pool.project}</div>
             <div><strong>Symbol:</strong> {pool.symbol}</div>
-            <div><strong>TVL (USD):</strong> ${pool.tvlUsd.toLocaleString()}</div>
-            <div><strong>APY Base:</strong> {pool.apyBase ? `${pool.apyBase}%` : 'N/A'}</div>
-            <div><strong>APY Reward:</strong> {pool.apyReward ? `${pool.apyReward}%` : 'N/A'}</div>
-            <div><strong>Reward Tokens:</strong> {pool.rewardTokens ? pool.rewardTokens.join(', ') : 'N/A'}</div>
-            <div><strong>Stablecoin:</strong> {pool.stablecoin ? 'Yes' : 'No'}</div>
-            <div><strong>IL Risk:</strong> {pool.ilRisk}</div>
-            <div><strong>Exposure:</strong> {pool.exposure}</div>
-            <div><strong>Pool Meta:</strong> {pool.poolMeta ? pool.poolMeta : 'N/A'}</div>
-            <div><strong>Pool:</strong> {pool.pool}</div> {/* Display the pool field */}
+            <div><strong>Pool:</strong> {pool.pool}</div>
             <div><strong>Underlying Tokens:</strong> {pool.underlyingTokens ? pool.underlyingTokens.join(', ') : 'N/A'}</div>
+            <div className="pool-actions">
+              <button className="deposit-button">Deposit</button>
+              {hasOpenPosition(pool) && (
+                <button className="withdraw-button">Withdraw</button>
+              )}
+            </div>
           </li>
         ))}
       </ul>
