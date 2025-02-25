@@ -1,5 +1,5 @@
 import { EthersAdapter } from '@reown/appkit-adapter-ethers'
-import { mainnet, arbitrum, rootstock, rootstockTestnet } from '@reown/appkit/networks'
+import { mainnet, arbitrum, rootstock, rootstockTestnet, moonbeam, moonbaseAlpha } from '@reown/appkit/networks'
 import type { AppKitNetwork } from '@reown/appkit/networks'
 
 // Get projectId from https://cloud.reown.com
@@ -9,6 +9,6 @@ if (!projectId) {
   throw new Error('Project ID is not defined')
 }
 
-export const networks = [mainnet, rootstock, rootstockTestnet] as [AppKitNetwork, ...AppKitNetwork[]]
+export const networks = [mainnet, rootstock, rootstockTestnet, moonbeam, moonbaseAlpha] as [AppKitNetwork, ...AppKitNetwork[]]
 
 export const ethersAdapter = new EthersAdapter();

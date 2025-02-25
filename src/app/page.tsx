@@ -2,6 +2,7 @@ import { ConnectButton } from "@/components/ConnectButton";
 import { InfoList } from "@/components/InfoList";
 import { ActionButtonList } from "@/components/ActionButtonList";
 import Image from 'next/image';
+import { WormholeButton } from "@/components/WormholeButton";
 
 export default function Home() {
 
@@ -16,7 +17,8 @@ export default function Home() {
       </div>
       <div className="content-wrap">
         
-        
+      <WormholeButton />
+
       </div>
       <footer className="footer">
         <Image src="/reown.svg" alt="Reown" width={50} height={50} priority />
